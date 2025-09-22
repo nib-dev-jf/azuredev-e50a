@@ -12,28 +12,59 @@ Press ``Ctrl-` `` &nbsp; to open a terminal window.
 
 ## Run your model locally
 
-To run the model that you deployed in AI Foundry, and view the output in the terminal run the following command:
+To run the model that you deployed in AI Foundry and view the output in the terminal:
 
 ```bash
 python run_model.py
 ```
 
 
-## Add, provision and deploy web app that uses the model
+## Run the Streamlit UI
 
-To add a web app that uses your model, run:
+Place a `.env` file in the repo root (same folder as this file) with at least:
+
+```
+ENDPOINT_URL=<your-azure-openai-endpoint>
+DEPLOYMENT_NAME=<your-model-deployment>
+AZURE_OPENAI_API_KEY=<your-key>
+```
+
+Then:
+
+```bash
+pip install -r requirements-dev.txt
+streamlit run ./streamlit_app/app.py
+```
+
+The app will still load even if env vars are missing (chatting will be disabled until configured).
+
+## Run the backend API (FastAPI)
+
+```bash
+pip install -r src/requirements.txt
+uvicorn src.api.main:create_app --factory --reload --port 8000
+```
+
+## Run the React frontend (dev server)
+
+```bash
+cd src/frontend
+pnpm install
+pnpm dev
+```
+
+The dev server proxies /chat and /static to http://localhost:8000.
+
+## Deploy with azd
+
+Initialize and deploy:
 
 ```bash
 azd init -t https://github.com/Azure-Samples/get-started-with-ai-chat
-```
-
-You can provision and deploy this web app using:
-
-```bash
 azd up
 ```
 
-To delete the web app and stop incurring any charges, run:
+Tear down:
 
 ```bash
 azd down

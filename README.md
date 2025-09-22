@@ -35,7 +35,37 @@ The app code runs in Azure Container apps to process the user input and generate
 | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Azure-Samples/get-started-with-ai-chat) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/get-started-with-ai-chat) |
 |---|---|
 
-Github Codespaces and Dev Containers both allow you to download and deploy the code for development. You can also continue with local development. Once you have selected your environment, [click here to launch the development and deployment guide](./docs/deployment.md)
+Github Codespaces and Dev Containers both allow you to download and deploy the code for development. You can also continue with local development. Once you have selected your environment, [click here to launch the development and deployment guide](./docs/deployment.md).
+
+### Local development quickstart
+
+Create a `.env` in the repo root with at least:
+
+```
+ENDPOINT_URL=<your-azure-openai-endpoint>
+DEPLOYMENT_NAME=<your-model-deployment>
+AZURE_OPENAI_API_KEY=<your-key>
+```
+
+Then run one or more of the following:
+
+- CLI chatbot
+  - `pip install -r requirements.txt`
+  - `python run_model.py`
+
+- Streamlit UI
+  - `pip install -r requirements-dev.txt`
+  - `streamlit run ./streamlit_app/app.py`
+
+- Backend API (FastAPI)
+  - `pip install -r src/requirements.txt`
+  - `uvicorn src.api.main:create_app --factory --reload --port 8000`
+
+- Frontend (React, dev server)
+  - `cd src/frontend && pnpm install && pnpm dev`
+  - Dev server proxies /chat and /static to http://localhost:8000
+
+Security note: never commit secrets. Rotate any exposed keys immediately in the Azure Portal.
 
 **After deployment, try these [sample questions](./docs/sample_questions.md) to test your web application.**
 
