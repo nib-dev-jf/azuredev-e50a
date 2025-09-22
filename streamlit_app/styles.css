@@ -25,7 +25,13 @@
 }
 
 /* Layout tweaks */
-.block-container {padding-top: 2rem; max-width: 1200px;}
+/* Ensure content isn't hidden behind Streamlit's top toolbar and avoid clipping */
+.block-container {padding-top: 4rem; max-width: 1200px; overflow: visible;}
+.stApp, .main {overflow: visible !important;}
+
+/* Improve readability and prevent ascender/descender clipping in text */
+p, .stMarkdown p, .stChatMessage p, .stChatMessage div, .stText, .stMarkdown {line-height: 1.5;}
+h1, h2, h3 {margin-top: 0.25rem;}
 
 /* Typography */
 html, body, [class*='css'] {font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;}

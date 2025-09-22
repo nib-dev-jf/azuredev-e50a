@@ -1,30 +1,45 @@
 import os
-import json
+import sys
 from datetime import datetime
-from typing import List, Dict, Any, Optional, Iterator
+from typing import List, Dict, Any
 
-import httpx
 import streamlit as st
+from openai import AzureOpenAI
+from dotenv import load_dotenv
 
-# Load environment variables if available
+# Load environment variables
+load_dotenv()
+
+def get_required_env_var(var_name, description):
+    """Get required environment variable or show error."""
+    value = os.getenv(var_name)
+    if not value:
+        st.error(f"❌ Missing {var_name} environment variable!")
+        st.info(f"Please set {var_name} in your .env file: {description}")
+        st.stop()
+    return value
+
+# Get required environment variables
 try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except Exception:
-    pass
+    endpoint = get_required_env_var("ENDPOINT_URL", "Your Azure OpenAI endpoint URL")
+    deployment = get_required_env_var("DEPLOYMENT_NAME", "Your deployment model name")
+    subscription_key = get_required_env_var("AZURE_OPENAI_API_KEY", "Your Azure OpenAI API key")
+    
+    # Initialize Azure OpenAI client
+    client = AzureOpenAI(
+        azure_endpoint=endpoint,
+        api_key=subscription_key,
+        api_version="2025-01-01-preview",
+    )
+except Exception as e:
+    st.error(f"❌ Failed to initialize Azure OpenAI: {e}")
+    st.stop()
 
 st.set_page_config(
     page_title="AI Chat Pro",
     page_icon="💬",
     layout="wide"
 )
-
-# Constants / Config
-DEFAULT_API_BASE = os.getenv("CHAT_API_BASE_URL", "http://localhost:8000")
-API_CHAT_ENDPOINT = "/chat"
-BASIC_USER = os.getenv("WEB_APP_USERNAME")
-BASIC_PASS = os.getenv("WEB_APP_PASSWORD")
-DEFAULT_MODEL = os.getenv("AZURE_AI_CHAT_DEPLOYMENT_NAME", "gpt-4o-mini")
 
 # Inject CSS
 css_path = os.path.join(os.path.dirname(__file__), "styles.css")
