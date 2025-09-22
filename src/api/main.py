@@ -8,7 +8,11 @@ from typing import Union
 
 import fastapi
 from azure.ai.projects.aio import AIProjectClient
-from azure.identity import AzureDeveloperCliCredential, ManagedIdentityCredential
+from azure.identity import (
+    AzureDeveloperCliCredential,
+    ManagedIdentityCredential,
+    DefaultAzureCredential,
+)
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 
@@ -21,16 +25,24 @@ enable_trace = False
 
 @contextlib.asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    azure_credential: Union[AzureDeveloperCliCredential,
-                            ManagedIdentityCredential]
+    azure_credential: Union[
+        AzureDeveloperCliCredential,
+        ManagedIdentityCredential,
+        DefaultAzureCredential,
+    ]
     if not os.getenv("RUNNING_IN_PRODUCTION"):
-        if tenant_id := os.getenv("AZURE_TENANT_ID"):
-            logger.info(
-                "Using AzureDeveloperCliCredential with tenant_id %s", tenant_id)
-            azure_credential = AzureDeveloperCliCredential(tenant_id=tenant_id)
-        else:
-            logger.info("Using AzureDeveloperCliCredential")
-            azure_credential = AzureDeveloperCliCredential()
+        # In local/dev, favor DefaultAzureCredential so Docker and host can auth via:
+        # - Environment variables (AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET)
+        # - Azure CLI (az login)
+        # - Azure PowerShell
+        # - Azure Developer CLI (azd auth login)
+        # - VS Code/Shared Token Cache
+        logger.info(
+            "Using DefaultAzureCredential for development (env/CLI/azd/VSCode)."
+        )
+        azure_credential = DefaultAzureCredential(
+            exclude_managed_identity_credential=True
+        )
     else:
         # User-assigned identity was created and set in api.bicep
         user_identity_client_id = os.getenv("AZURE_CLIENT_ID")

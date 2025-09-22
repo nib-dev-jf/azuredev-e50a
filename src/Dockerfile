@@ -30,4 +30,5 @@ WORKDIR /code
 
 EXPOSE 50505
 
-CMD ["gunicorn", "api.main:create_app"]
+# Run FastAPI via Gunicorn with Uvicorn workers, binding to container port
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:50505", "api.main:create_app"]
