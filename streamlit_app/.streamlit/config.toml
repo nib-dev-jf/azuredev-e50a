@@ -1,0 +1,12 @@
+[server]
+runOnSave = true
+headless = true
+maxUploadSize = 200
+
+[theme]
+base = "light"
+primaryColor = "#2E37A4"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FB"
+textColor = "#1F2330"
+font = "sans serif"
